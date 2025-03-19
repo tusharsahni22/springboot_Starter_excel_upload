@@ -1,21 +1,29 @@
 package com.demo.demo.controller;
 
+import com.demo.demo.LoginForm;
 import com.demo.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
-@RestController
-@RequestMapping("/api")
+@Controller
 @RequiredArgsConstructor
 @Slf4j
 public class LoginController {
 
     private final UserService userService;
+
+    @GetMapping("/login")
+    public String login() {
+        System.out.println("inside login-------------");
+        return "login";
+    }
 
     @PostMapping("/upload")
     public String uploadExcelFile(
@@ -35,14 +43,17 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password, RedirectAttributes redirectAttributes) {
-        boolean isAuthenticated = userService.authenticate(username, password);
+    public String login(/*@RequestParam String username, @RequestParam String password,*/ @ModelAttribute(name = "loginForm") LoginForm loginForm, Model model) {
+        System.out.println("inside login");
+        boolean isAuthenticated = userService.authenticate(loginForm.getUsername(), loginForm.getPassword());
         if (isAuthenticated) {
-            redirectAttributes.addFlashAttribute("message", "Login successful!");
-            return "redirect:/home";
+            //model.addAttribute("message", "Login successful!");
+            return "home";
         } else {
-            redirectAttributes.addFlashAttribute("error", "Invalid username or password.");
-            return "redirect:/login";
+            model.addAttribute("invalid creds", true);
+            return "login";
         }
     }
+
+
 }
