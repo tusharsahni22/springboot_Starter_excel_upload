@@ -1,14 +1,16 @@
 package com.demo.demo.controller;
 
-import com.demo.demo.LoginForm;
+import com.demo.demo.dto.LoginForm;
 import com.demo.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
@@ -21,13 +23,13 @@ public class LoginController {
 
     @GetMapping("/login")
     public String login() {
-        System.out.println("inside login-------------");
+        log.info("going login page-------------");
         return "login";
     }
 
     @GetMapping("/upload")
     public String upload() {
-        System.out.println("inside upload-------------");
+        log.info("going upload page-------------");
         return "upload";
     }
 
@@ -39,19 +41,18 @@ public class LoginController {
         } catch (IOException e) {
             model.addAttribute("error", "Failed to upload file: " + e.getMessage());
         }
-
         return "login";
     }
 
     @PostMapping("/login")
     public String login(/*@RequestParam String username, @RequestParam String password,*/ @ModelAttribute(name = "loginForm") LoginForm loginForm, Model model) {
-        System.out.println("inside login");
+        log.info("inside login");
         boolean isAuthenticated = userService.authenticate(loginForm.getUsername(), loginForm.getPassword());
         if (isAuthenticated) {
             //model.addAttribute("message", "Login successful!");
             return "home";
         } else {
-            model.addAttribute("invalid creds", true);
+            model.addAttribute("invalidCreds", true);
             return "login";
         }
     }
