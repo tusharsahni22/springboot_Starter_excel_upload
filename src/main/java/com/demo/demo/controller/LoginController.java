@@ -25,21 +25,22 @@ public class LoginController {
         return "login";
     }
 
-    @PostMapping("/upload")
-    public String uploadExcelFile(
-            @RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) {
+    @GetMapping("/upload")
+    public String upload() {
+        System.out.println("inside upload-------------");
+        return "upload";
+    }
 
+    @PostMapping("/upload")
+    public String uploadExcelFile(@RequestParam("file") MultipartFile file, Model model) {
         try {
             userService.processExcelFile(file);
-            redirectAttributes.addFlashAttribute("message",
-                    "Users uploaded successfully from file: " + file.getOriginalFilename());
+            model.addAttribute("message", "Users uploaded successfully from file: " + file.getOriginalFilename());
         } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("error",
-                    "Failed to upload file: " + e.getMessage());
+            model.addAttribute("error", "Failed to upload file: " + e.getMessage());
         }
 
-        return "redirect:/login";
+        return "login";
     }
 
     @PostMapping("/login")
